@@ -76,18 +76,19 @@ export const generateRecipe = async (
   formData: RecipeFormData
 ): Promise<RecipeResponse> => {
   try {
-    // Always create a new instance with process.env.API_KEY for deployment compatibility
+    // CRITICAL: We use process.env.API_KEY which is injected by the deployment environment (Vercel/Cloud).
+    // This keeps the key private and secure.
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
     const response = await ai.models.generateContent({
-      model: 'gemini-3-pro-preview', // High-quality reasoning for precise metric conversions
+      model: 'gemini-3-pro-preview', 
       contents: `Generate a recipe for ${formData.dishName} serving ${formData.peopleCount}. ${formData.restrictions ? 'Dietary restrictions: ' + formData.restrictions : ''}`,
       config: {
         systemInstruction: RECIPE_SYSTEM_INSTRUCTION,
         responseMimeType: "application/json",
         responseSchema: recipeSchema,
         temperature: 0.1,
-        thinkingConfig: { thinkingBudget: 4096 }, // Allocated thinking budget for portion math
+        thinkingConfig: { thinkingBudget: 4096 }, 
       },
     });
 
