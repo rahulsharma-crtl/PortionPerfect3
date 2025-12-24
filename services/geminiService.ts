@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { RecipeResponse, RecipeFormData } from "../types";
 
@@ -77,23 +76,23 @@ export const generateRecipe = async (
   formData: RecipeFormData
 ): Promise<RecipeResponse> => {
   try {
-    // Create instance right before call to ensure it uses the latest API key from the environment
-    const ai = new GoogleGenAI({ apiKey: "AIzaSyDoNF_REthvJu1fuweUdzQQmKXe0AGbR5k" });
+    // Always create a new instance with process.env.API_KEY for deployment compatibility
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
     const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview', // Upgraded to Pro for complex portion scaling and reasoning
+      model: 'gemini-3-pro-preview', // High-quality reasoning for precise metric conversions
       contents: `Generate a recipe for ${formData.dishName} serving ${formData.peopleCount}. ${formData.restrictions ? 'Dietary restrictions: ' + formData.restrictions : ''}`,
       config: {
         systemInstruction: RECIPE_SYSTEM_INSTRUCTION,
         responseMimeType: "application/json",
         responseSchema: recipeSchema,
         temperature: 0.1,
-        thinkingConfig: { thinkingBudget: 4096 }, // Reasoning budget for precise portion math
+        thinkingConfig: { thinkingBudget: 4096 }, // Allocated thinking budget for portion math
       },
     });
 
     const jsonText = response.text;
-    if (!jsonText) throw new Error("No response");
+    if (!jsonText) throw new Error("No response from AI model.");
     return JSON.parse(jsonText) as RecipeResponse;
   } catch (error) {
     console.error("Recipe Generation Error:", error);
