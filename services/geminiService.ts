@@ -81,7 +81,7 @@ export const generateRecipe = async (
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
     const response = await ai.models.generateContent({
-      model: 'gemini-3-pro-preview', 
+      model: 'gemini-3-flash-preview', 
       contents: `Generate a recipe for ${formData.dishName} serving ${formData.peopleCount}. ${formData.restrictions ? 'Dietary restrictions: ' + formData.restrictions : ''}`,
       config: {
         systemInstruction: RECIPE_SYSTEM_INSTRUCTION,
